@@ -91,8 +91,3 @@ building and testing.
 `corpusValidation.spec.ts` and `validateCodesRecord.spec.ts` validate against a corpus when one
 is present, and **skip cleanly when it is absent** (the corpus is never committed). A fresh clone runs
 the suite green without any data.
-
-## Releasing
-
-Publishing is automated: cutting a GitHub Release publishes `@courthive/ingest-core` to npm via the
-`publish` workflow (needs an `NPM_TOKEN` secret). Bump the version in `package.json` in the release PR.
