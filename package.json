@@ -1,0 +1,54 @@
+{
+  "name": "@courthive/ingest-core",
+  "version": "0.1.0",
+  "description": "Federation-agnostic tournament ingestion toolkit: an adapter contract, a registry, TODS/CODES normalization, factory-backed integrity checking, and a generic sanction-policy engine. Bring your own site adapters.",
+  "keywords": ["tennis", "tournament", "tods", "codes", "ingest", "adapter", "normalization", "sports-data"],
+  "homepage": "https://github.com/CourtHive/ingest-core#readme",
+  "bugs": { "url": "https://github.com/CourtHive/ingest-core/issues" },
+  "repository": { "type": "git", "url": "git+https://github.com/CourtHive/ingest-core.git" },
+  "author": "Charles Allen <charles@CourtHive.com> (CourtHive.com)",
+  "license": "MIT",
+  "type": "commonjs",
+  "main": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "require": "./build/index.js",
+      "import": "./build/index.js"
+    }
+  },
+  "files": ["build", "examples", "README.md", "LICENSE"],
+  "sideEffects": false,
+  "packageManager": "pnpm@11.24.0",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "rimraf build && tsc -p tsconfig.json",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src examples --max-warnings 0",
+    "format": "prettier --write \"src/**/*.ts\" \"examples/**/*.ts\"",
+    "test": "TZ=UTC vitest --run",
+    "test:watch": "TZ=UTC vitest",
+    "prepublishOnly": "pnpm run build"
+  },
+  "peerDependencies": {
+    "tods-competition-factory": ">=6.37.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "25.9.5",
+    "@typescript-eslint/eslint-plugin": "8.68.0",
+    "@typescript-eslint/parser": "8.68.0",
+    "eslint": "10.8.1",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-prettier": "5.5.6",
+    "eslint-plugin-sonarjs": "^4.1.0",
+    "globals": "^17.7.0",
+    "prettier": "3.9.6",
+    "rimraf": "^6.0.0",
+    "tods-competition-factory": "6.37.0",
+    "typescript": "6.0.3",
+    "vitest": "^4.1.9"
+  },
+  "publishConfig": { "access": "public" }
+}

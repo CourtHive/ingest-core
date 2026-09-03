@@ -1,0 +1,10 @@
+node_modules
+build
+dist
+coverage
+*.tsbuildinfo
+.eslintcache
+.DS_Store
+# corpora used by opt-in corpus-backed specs; never part of the public repo
+tods/
+data/
