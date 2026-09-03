@@ -91,7 +91,11 @@ describe('writeCodesRecord — validation gate', () => {
 
   it('REFUSES to write an invalid record, and writes no file', async () => {
     const record = clone(validRecord());
-    record.venues = [{ venueName: 'No id here' }];
+    // A venue with NEITHER an id nor a name. `ensureVenueIdentity` (which the writer now runs before
+    // validating) repairs a NAMED venue by deriving an id from the name, so "named but unidentified"
+    // is no longer an invalid state and no longer exercises this gate. Nothing can be derived from an
+    // empty venue, so it stays invalid -- which is what these two tests are actually about.
+    record.venues = [{}];
     const target = path.join(outDir, 'TEST', `${record.tournamentId}.json`);
     fs.rmSync(target, { force: true });
 
@@ -103,7 +107,11 @@ describe('writeCodesRecord — validation gate', () => {
 
   it('allowInvalid writes anyway but never silently — every error is reported', async () => {
     const record = clone(validRecord());
-    record.venues = [{ venueName: 'No id here' }];
+    // A venue with NEITHER an id nor a name. `ensureVenueIdentity` (which the writer now runs before
+    // validating) repairs a NAMED venue by deriving an id from the name, so "named but unidentified"
+    // is no longer an invalid state and no longer exercises this gate. Nothing can be derived from an
+    // empty venue, so it stays invalid -- which is what these two tests are actually about.
+    record.venues = [{}];
     const reported: string[] = [];
     const result = await writeCodesRecord(record, {
       outDir,

@@ -1,6 +1,7 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 
+import { ensureVenueIdentity } from '../normalize/venueIdentity';
 import { validateCodesRecord } from './validateCodesRecord';
 
 import type { Tournament } from 'tods-competition-factory';
@@ -31,6 +32,11 @@ export interface WriteCodesOptions {
    * silently. Everything else refuses.
    */
   allowInvalid?: boolean;
+  /**
+   * Namespace for any venue/court id minted here. Defaults to the lowercased provider, which is what
+   * every adapter already uses as its `idPrefix` (`te`, `ts`, `utr`).
+   */
+  idPrefix?: string;
   /** Receives warnings, and errors when `allowInvalid` is set. Defaults to `console.warn`. */
   onDiagnostic?: (message: string) => void;
 }
@@ -51,6 +57,20 @@ export async function writeCodesRecord(
   // VALIDATE BEFORE WRITING, at the shared writer, so "every assembled record is validated" is a
   // property of the code path rather than a rule each adapter has to remember. Two defects reached
   // disk and then a server this session precisely because nothing sat here.
+  // GIVE VENUES AN IDENTITY BEFORE VALIDATING THEM. `venueId` is required, and 16 venues across the
+  // TE and TS corpora reached disk without one because each adapter mints ids on its own parse path
+  // and both have a branch that does not. Doing it here makes "every venue has a stable id" a
+  // property of the write path rather than a rule each adapter has to remember -- the same argument
+  // the validation below already makes.
+  //
+  // Derived from the venue NAME, so one club keeps one id across tournaments. Existing ids are never
+  // rewritten: an id already loaded has references, and changing it would orphan them.
+  const identity = ensureVenueIdentity(tournamentRecord, options.idPrefix ?? options.provider.toLowerCase());
+  if (identity.venuesFixed || identity.courtsFixed) {
+    report(`i ${tournamentRecord.tournamentId}: minted ${identity.venuesFixed} venueId(s), ${identity.courtsFixed} courtId(s)`);
+  }
+  for (const unresolved of identity.unresolved) report(`⚠ ${tournamentRecord.tournamentId}: ${unresolved.reason}`);
+
   const { valid, errors, warnings } = validateCodesRecord(tournamentRecord);
   for (const warning of warnings) report(`⚠ ${tournamentRecord.tournamentId}: ${warning}`);
   if (!valid) {

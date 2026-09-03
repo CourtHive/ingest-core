@@ -15,6 +15,7 @@ export * from './contract/AdapterRegistry';
 // ---- TODS/CODES normalization ----
 export * from './normalize/builders';
 export * from './normalize/unifiedIds';
+export * from './normalize/venueIdentity';
 export * from './normalize/numeric';
 export * from './normalize/tournamentLevel';
 
