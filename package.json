@@ -2,10 +2,24 @@
   "name": "@courthive/ingest-core",
   "version": "0.1.0",
   "description": "Federation-agnostic tournament ingestion toolkit: an adapter contract, a registry, TODS/CODES normalization, factory-backed integrity checking, and a generic sanction-policy engine. Bring your own site adapters.",
-  "keywords": ["tennis", "tournament", "tods", "codes", "ingest", "adapter", "normalization", "sports-data"],
+  "keywords": [
+    "tennis",
+    "tournament",
+    "tods",
+    "codes",
+    "ingest",
+    "adapter",
+    "normalization",
+    "sports-data"
+  ],
   "homepage": "https://github.com/CourtHive/ingest-core#readme",
-  "bugs": { "url": "https://github.com/CourtHive/ingest-core/issues" },
-  "repository": { "type": "git", "url": "git+https://github.com/CourtHive/ingest-core.git" },
+  "bugs": {
+    "url": "https://github.com/CourtHive/ingest-core/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CourtHive/ingest-core.git"
+  },
   "author": "Charles Allen <charles@CourtHive.com> (CourtHive.com)",
   "license": "MIT",
   "type": "commonjs",
@@ -18,10 +32,17 @@
       "import": "./build/index.js"
     }
   },
-  "files": ["build", "examples", "README.md", "LICENSE"],
+  "files": [
+    "build",
+    "examples",
+    "README.md",
+    "LICENSE"
+  ],
   "sideEffects": false,
   "packageManager": "pnpm@11.24.0",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build": "rimraf build && tsc -p tsconfig.json",
     "check-types": "tsc --noEmit",
@@ -29,6 +50,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"examples/**/*.ts\"",
     "test": "TZ=UTC vitest --run",
     "test:watch": "TZ=UTC vitest",
+    "prepare": "pnpm run build",
     "prepublishOnly": "pnpm run build"
   },
   "peerDependencies": {
@@ -50,5 +72,7 @@
     "typescript": "6.0.3",
     "vitest": "^4.1.9"
   },
-  "publishConfig": { "access": "public" }
+  "publishConfig": {
+    "access": "public"
+  }
 }
