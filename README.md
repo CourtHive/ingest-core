@@ -43,7 +43,9 @@ record drops straight into the same components CourtHive uses in production:
 - **TMX** — the full competition-management client: draws, entries, seeding,
   scheduling, scoring, publishing — all operating on CODES.
 - **courthive-public** — the public tournament viewer, fed the same records.
-- **tods-score-grid** — draw/bracket visualization as a drop-in React component.
+- **courthive-rankings** — the ranking pipeline: ingests CODES records, computes point awards through the
+  factory, and produces sliding-window ranking snapshots — the *same* pipeline no matter which source the
+  tournaments came from.
 - **courthive-query** — the read-model / query surface: flattened SQL projections of the tournament domain
   (a person's match history, a team's results, a venue's tournaments, provider reporting) served as pure joins,
   because every record entered the system in the same shape.
