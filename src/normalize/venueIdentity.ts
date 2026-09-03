@@ -67,6 +67,29 @@ export function deriveVenueId(idPrefix: string, venueName: string): string {
 }
 
 /**
+ * `<idPrefix>-locality-<12 hex>`, for a source that reports WHERE an event happened and not WHAT
+ * venue hosted it.
+ *
+ * Tennis Europe is the case that forced this. Its event pages carry a `City:` field and no venue,
+ * club, stadium or facility field at all, so the adapter had been setting `venueName` to the city —
+ * which made a locality look like a club. Two consequences, both real:
+ *
+ *   - It cross-matched other sources. "Vierumaki" as a TE city equalled "Vierumaki" as a Tennis
+ *     Software CLUB name, and "TK LTC Houstka" matched only because TE had put a club name in its
+ *     city field while Tennis Software recorded the actual town, Stara Boleslav. Two apparent
+ *     agreements, neither of them evidence.
+ *   - It asserted a venue that was never reported.
+ *
+ * A locality is a legitimate thing to know, so it keeps an identity — but a DISTINCT id shape, so
+ * nothing downstream can mistake it for a venue, and a reconciler can see at a glance which ids
+ * describe a place and which describe a club.
+ */
+export function deriveLocalityId(idPrefix: string, city: string, countryCode?: string): string {
+  const key = [normalizeVenueName(city), (countryCode ?? '').trim().toLowerCase()].filter(Boolean).join('|');
+  return `${idPrefix}-locality-${digest(`${idPrefix}:locality:${key}`, 12)}`;
+}
+
+/**
  * `<venueId>-court-<8 hex>`, stable for a given (venueId, court name).
  *
  * Keyed on the venue rather than the tournament so "Court 2" at one club is one court all season.
@@ -106,15 +129,25 @@ export function ensureVenueIdentity(record: Tournament, idPrefix: string): Venue
 
   for (const venue of venues) {
     if (!venue.venueId) {
-      if (!venue.venueName?.trim()) {
-        // No id and no name is not something to paper over with a random uuid: it would mint a new
-        // venue on every harvest of the same record. Report it and let validation refuse.
-        result.unresolved.push({ venueName: venue.venueName, reason: 'no venueId and no venueName to derive one from' });
+      const city = (venue as any)?.addresses?.find((address: any) => address?.city?.trim())?.city;
+      const countryCode = (venue as any)?.addresses?.find((address: any) => address?.countryCode)?.countryCode;
+
+      if (venue.venueName?.trim()) {
+        venue.venueId = deriveVenueId(idPrefix, venue.venueName);
+        mark(venue, 'venueName', normalizeVenueName(venue.venueName));
+        result.venuesFixed += 1;
+      } else if (city?.trim()) {
+        // A named venue is preferred; a locality is what some sources actually report. Identifying it
+        // as a locality is honest, and keeps it from colliding with a club of the same name.
+        venue.venueId = deriveLocalityId(idPrefix, city, countryCode);
+        mark(venue, 'address', [normalizeVenueName(city), countryCode].filter(Boolean).join('|'));
+        result.venuesFixed += 1;
+      } else {
+        // Neither a name nor a place. A random uuid here would mint a new venue on every harvest of
+        // the same record, so report it and let validation refuse.
+        result.unresolved.push({ venueName: venue.venueName, reason: 'no venueId, and neither a venueName nor an address city to derive one from' });
         continue;
       }
-      venue.venueId = deriveVenueId(idPrefix, venue.venueName);
-      mark(venue, 'venueName', normalizeVenueName(venue.venueName));
-      result.venuesFixed += 1;
     }
 
     const courts = venue.courts ?? [];

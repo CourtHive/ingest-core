@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { deriveVenueId, deriveCourtId, ensureVenueIdentity, normalizeVenueName, SYNTHESIZED_IDENTITY } from './venueIdentity';
+import { deriveVenueId, deriveCourtId, deriveLocalityId, ensureVenueIdentity, normalizeVenueName, SYNTHESIZED_IDENTITY } from './venueIdentity';
 
 import type { Tournament } from 'tods-competition-factory';
 
@@ -87,9 +87,36 @@ describe('ensureVenueIdentity', () => {
     expect((tournament as any).venues[0].extensions).toBeUndefined();
   });
 
-  it('reports a venue it cannot identify rather than minting something unstable', () => {
-    // No id and no name: a random uuid here would mint a new venue on every harvest of one record.
-    const tournament = record([{ addresses: [{ city: 'Chisinau' }] }]);
+  it('identifies a venue that has only a place as a LOCALITY', () => {
+    // Tennis Europe reports a city and no venue at all. A locality is a real thing to know, so it
+    // gets an identity -- but a distinct id shape, so nothing downstream reads it as a club.
+    const tournament = record([{ addresses: [{ city: 'Vierumaki', countryCode: 'FIN' }] }]);
+    const result = ensureVenueIdentity(tournament, 'te');
+
+    const venue = (tournament as any).venues[0];
+    expect(result.venuesFixed).toBe(1);
+    expect(venue.venueId).toBe(deriveLocalityId('te', 'Vierumaki', 'FIN'));
+    expect(venue.venueId).toContain('-locality-');
+    expect(venue.extensions?.find((e: any) => e.name === SYNTHESIZED_IDENTITY)?.value.basis).toBe('address');
+  });
+
+  it('does NOT let a locality collide with a club of the same name', () => {
+    // The defect this whole shape exists to prevent: "Vierumaki" the TE city matching "Vierumaki"
+    // the Tennis Software club, and being merged as one venue.
+    expect(deriveLocalityId('te', 'Vierumaki', 'FIN')).not.toBe(deriveVenueId('ts', 'Vierumaki'));
+    expect(deriveLocalityId('te', 'Vierumaki', 'FIN')).not.toBe(deriveVenueId('te', 'Vierumaki'));
+  });
+
+  it('prefers a NAME over a place when the source gives both', () => {
+    const tournament = record([{ venueName: 'TC Roger Club', addresses: [{ city: 'Vyshkovo' }] }]);
+    ensureVenueIdentity(tournament, 'ts');
+
+    expect((tournament as any).venues[0].venueId).toBe(deriveVenueId('ts', 'TC Roger Club'));
+  });
+
+  it('reports a venue with neither a name nor a place', () => {
+    // A random uuid here would mint a new venue on every harvest of one record.
+    const tournament = record([{}]);
     const result = ensureVenueIdentity(tournament, 'te');
 
     expect(result.venuesFixed).toBe(0);
