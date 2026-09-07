@@ -1,10 +1,28 @@
-name: Publish
+name: Publish to npm
 
-# Publishes @courthive/ingest-core to npm when a GitHub Release is published.
-# Requires an NPM_TOKEN secret with publish rights to the @courthive scope.
+# Fires when a GitHub release is published. release-please creates the release
+# via a GitHub-App-issued token, so the `release: published` event is delivered
+# to this workflow. (The default GITHUB_TOKEN would silently drop the event
+# under GitHub's loop-prevention rules.)
+#
+# `workflow_dispatch` is kept as a manual escape hatch -- pass a `tag` input
+# (e.g. `v0.1.1`) to publish a tag that already exists.
+#
+# Matches the shape used by the other published CourtHive packages
+# (tods-competition-factory, @courthive/provider-config, @courthive/i18n,
+# scoring-visualizations). Renamed from publish.yml so the filename matches the
+# ecosystem convention AND the trusted-publisher config registered on npm, which
+# names the workflow file explicitly.
+
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to publish (e.g. v0.1.1). Must already exist.'
+        required: true
+        type: string
 
 jobs:
   publish:
@@ -13,19 +31,65 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@v4
-      # `version` intentionally omitted — pnpm/action-setup@v6 errors with
-      # ERR_PNPM_BAD_PM_VERSION when both `version:` is set AND
-      # `packageManager` is present in package.json. package.json stays the
-      # single source of truth (matches pnpm v11's own expectation).
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v4
+      - name: Resolve tag
+        id: ref
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ inputs.tag }}"
+          else
+            TAG="${{ github.event.release.tag_name }}"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v7
         with:
-          node-version: 22
+          ref: ${{ steps.ref.outputs.tag }}
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
           cache: pnpm
-          registry-url: 'https://registry.npmjs.org'
+
+      # No link-override strip step here, unlike the other publish workflows.
+      # This package has no `link:` overrides at all -- it depends on
+      # tods-competition-factory as a PEER dependency and never resolves a
+      # sibling checkout -- so the committed lockfile is publishable as-is and
+      # can be enforced rather than deleted and re-resolved.
       - run: pnpm install --frozen-lockfile
-      - run: pnpm run build
-      - run: pnpm publish --no-git-checks --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - run: pnpm lint
+
+      - run: pnpm check-types
+
+      - run: pnpm test
+
+      # `npm publish` runs prepublishOnly, which rebuilds. Build explicitly
+      # first so a build failure surfaces as its own failed step rather than
+      # inside the publish step.
+      - run: pnpm build
+
+      - name: Determine npm dist-tag
+        id: distTag
+        run: |
+          VERSION="${{ steps.ref.outputs.version }}"
+          if [[ "$VERSION" == *"-alpha"* ]]; then
+            echo "tag=alpha" >> "$GITHUB_OUTPUT"
+          elif [[ "$VERSION" == *"-beta"* ]]; then
+            echo "tag=beta" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=latest" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Trusted Publisher auth -- no NPM_TOKEN needed. `actions/setup-node`
+      # exchanges the workflow's OIDC token (id-token: write) for an npm publish
+      # token at the moment of `npm publish`, provided the package has a trusted
+      # publisher configured pointing at this repo + this workflow filename.
+      # See https://www.npmjs.com/package/@courthive/ingest-core (Settings).
+      #
+      # 0.1.0 was published by hand with a granular token because no trusted
+      # publisher existed yet; this is what makes 0.1.1 onward automatic.
+      - run: npm publish --provenance --access public --tag ${{ steps.distTag.outputs.tag }}
