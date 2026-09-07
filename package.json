@@ -1,6 +1,6 @@
 {
   "name": "@courthive/ingest-core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Federation-agnostic tournament ingestion toolkit: an adapter contract, a registry, TODS/CODES normalization, factory-backed integrity checking, and a generic sanction-policy engine. Bring your own site adapters.",
   "keywords": [
     "tennis",
