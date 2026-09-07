@@ -41,7 +41,7 @@
   "sideEffects": false,
   "packageManager": "pnpm@12.3.4",
   "engines": {
-    "node": ">=20"
+    "node": ">=22.12"
   },
   "scripts": {
     "build": "rimraf build && tsc -p tsconfig.json",
