@@ -1,0 +1,22 @@
+# ingest-core committed no pnpm-workspace.yaml at all, so it ran on pnpm's
+# DEFAULT supply-chain freshness policy with no exemption for CourtHive's own
+# packages. That is fine until the ecosystem cuts a release and cascades it,
+# which is exactly when it fails:
+#
+#   ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION
+#   tods-competition-factory@6.38.0 was published at 2026-09-08T20:49:33Z,
+#   within the minimumReleaseAge cutoff
+#
+# A factory bump therefore could not go green here until the package was a day
+# old — on a dependency we publish ourselves and control the contents of, where
+# the policy buys nothing. Every sibling repo already handles this: some set
+# `minimumReleaseAge: 0`, others keep the policy and exempt CourtHive packages.
+#
+# This takes the exempting form, so third-party supply-chain protection stays
+# on. Entries are deliberately UNVERSIONED: `pnpm install` auto-writes a pinned
+# `tods-competition-factory@6.38.0` when it hits the window, which works once
+# and then rots at the next release.
+minimumReleaseAgeExclude:
+  - 'tods-competition-factory'
+  - 'courthive-*'
+  - '@courthive/*'
