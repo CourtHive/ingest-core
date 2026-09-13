@@ -54,7 +54,7 @@
     "prepublishOnly": "pnpm run build"
   },
   "peerDependencies": {
-    "tods-competition-factory": ">=6.37.0"
+    "tods-competition-factory": ">=6.37.0 <7.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
