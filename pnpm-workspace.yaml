@@ -20,3 +20,9 @@ minimumReleaseAgeExclude:
   - 'tods-competition-factory'
   - 'courthive-*'
   - '@courthive/*'
+
+# Pairs with the renovate TS-major block in renovate.json. Every sibling repo
+# carries this pin; ingest-core was the only one without it, which is why
+# renovate raised a TS7 bump HERE and nowhere else in the ecosystem.
+overrides:
+  typescript: 6.0.3 # block native TS7 (no classic JS API — crashes tsc/nest/sonarjs); pairs with renovate TS-major block
