@@ -54,7 +54,7 @@
     "prepublishOnly": "pnpm run build"
   },
   "peerDependencies": {
-    "tods-competition-factory": ">=6.37.0 <7.0.0"
+    "tods-competition-factory": ">=6.37.0 <8.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -68,7 +68,7 @@
     "globals": "^17.7.0",
     "prettier": "3.9.6",
     "rimraf": "^6.0.0",
-    "tods-competition-factory": "6.38.0",
+    "tods-competition-factory": "7.0.0",
     "typescript": "6.0.3",
     "vitest": "^5.0.0"
   },
