@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/CourtHive/ingest-core/compare/v0.1.2...v0.1.3) (2026-09-24)
+
+
+### Documentation
+
+* add CLAUDE.md, with an AGENTS.md pointer to it ([f40a678](https://github.com/CourtHive/ingest-core/commit/f40a678225b3cfe424a801368a5fb1a8832924fd))
+
 ## [0.1.2](https://github.com/CourtHive/ingest-core/compare/v0.1.1...v0.1.2) (2026-09-07)
 
 
