@@ -6,6 +6,12 @@
   "minimumReleaseAge": "3 days",
   "packageRules": [
     {
+      "description": "pnpm itself is updated through packageManager / .tool-versions, not as a devDependency, so it got its own unscheduled PR re-run on every rebase (2026-10-07). Minor/patch wait for Monday; majors still arrive alone.",
+      "matchPackageNames": ["pnpm"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "schedule": ["before 6am on monday"]
+    },
+    {
       "description": "Block TypeScript major bumps. TS7 ships the native (Go) compiler, whose JS API shim lacks getParsedCommandLineOfConfigFile \u2014 nest/tsc-based build toolchains crash on it. Re-enable deliberately once the toolchain supports TS7.",
       "matchPackageNames": [
         "typescript"
