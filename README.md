@@ -97,6 +97,13 @@ if (result && !isAdapterError(result)) {
 }
 ```
 
+`writeCodesRecord` is the one path a record should take to disk. Before it writes, it **migrates** the record with
+the factory's `migrateTournamentRecord`, so it is stored in the shape the factory itself stores: first-class schedule
+attributes instead of legacy timeItems, and each draw's progression edges and finishing rounds where the source
+carried none. It then gives every venue and court a stable id, and validates. The migration and the venue ids are
+written onto the record you pass in, and each is reported through `onDiagnostic`. A record that fails validation is
+refused.
+
 See [`examples/exampleAdapter.ts`](./examples/exampleAdapter.ts) for a complete adapter skeleton against a
 fictional federation — copy it as your starting point.
 

@@ -1,4 +1,5 @@
 import { mkdir, writeFile } from 'node:fs/promises';
+import { tournamentGovernor } from 'tods-competition-factory';
 import { dirname, join } from 'node:path';
 
 import { ensureVenueIdentity } from '../normalize/venueIdentity';
@@ -65,6 +66,21 @@ export async function writeCodesRecord(
   //
   // Derived from the venue NAME, so one club keeps one id across tournaments. Existing ids are never
   // rewritten: an id already loaded has references, and changing it would orphan them.
+  // MIGRATE BEFORE ANYTHING ELSE READS THE RECORD (CA, 2026-10-16: `migrateTournamentRecord` is a standard
+  // requirement of ingest). A converter writes whatever shape its source suggests; the factory's migration makes it
+  // the shape the factory itself stores -- first-class schedule attributes rather than legacy timeItems, and a draw's
+  // progression edges and finishing rounds where the source carried none. Without it, a converted record gained its
+  // edges only as a side effect of a server query, and only once something had scheduled it. Idempotent: a record
+  // already in that shape is left as it is and nothing is reported.
+  const migration: any = tournamentGovernor.migrateTournamentRecord({ tournamentRecord });
+  if (migration?.totalPromoted) {
+    const promoted = Object.entries(migration.promoted ?? {})
+      .filter(([, count]) => count)
+      .map(([category, count]) => `${count} ${category}`)
+      .join(', ');
+    report(`i ${tournamentRecord.tournamentId}: migrated ${promoted}`);
+  }
+
   const identity = ensureVenueIdentity(tournamentRecord, options.idPrefix ?? options.provider.toLowerCase());
   if (identity.venuesFixed || identity.courtsFixed) {
     report(`i ${tournamentRecord.tournamentId}: minted ${identity.venuesFixed} venueId(s), ${identity.courtsFixed} courtId(s)`);
