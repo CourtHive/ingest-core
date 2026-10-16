@@ -1,5 +1,5 @@
-import { mkdir, writeFile } from 'node:fs/promises';
 import { tournamentGovernor } from 'tods-competition-factory';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 
 import { ensureVenueIdentity } from '../normalize/venueIdentity';
