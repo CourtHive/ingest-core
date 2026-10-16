@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/CourtHive/ingest-core/compare/v0.2.0...v0.2.1) (2026-10-16)
+
+
+### Bug Fixes
+
+* **deps:** update tods-competition-factory to 7.15.0 ([24182d6](https://github.com/CourtHive/ingest-core/commit/24182d6030c558a21563620f53b1324ed68dfbaa))
+
 ## [0.2.0](https://github.com/CourtHive/ingest-core/compare/v0.1.2...v0.2.0) (2026-10-16)
 
 
