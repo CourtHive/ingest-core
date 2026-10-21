@@ -1,3 +1,11 @@
+import type {
+  UnifiedDrawID,
+  UnifiedEventID,
+  UnifiedPersonID,
+  UnifiedTournamentID,
+  UnifiedParticipantID,
+} from 'tods-competition-factory';
+
 // The one place every adapter records what an ingested element is called in the source
 // federation's system.
 //
@@ -50,37 +58,28 @@ export function localId(origin: OriginOrganisation, ...parts: (string | number)[
   return [origin.idPrefix, ...parts].join('-');
 }
 
-// The Unified*ID shapes. These MIRROR the factory's `UnifiedTournamentID` /
-// `UnifiedEventID` / `UnifiedDrawID` / `UnifiedParticipantID` / `UnifiedPersonID` and are
-// declared locally because `isOrigin` at tournament grain and `UnifiedDrawID` entirely are
-// not in a published factory yet. Swap these for the factory imports at the version bump
-// that carries them.
+// The Unified*ID shapes are the factory's own. This module used to declare local MIRRORS of them
+// (`IngestTournamentID` and friends), because `UnifiedTournamentID.isOrigin` and `UnifiedDrawID`
+// were not yet in a published factory. Both shipped in 6.27.0, below this package's peer floor
+// (^7.1.0), so the tournament, event and draw grains are now the factory types themselves.
+//
+// The participant and person grains keep ONE field the factory does not declare: `isOrigin`. The
+// helpers below have always written it at every grain, and the factory's concept doc states the
+// at-most-one-origin rule for every member of the family, but `UnifiedParticipantID` and
+// `UnifiedPersonID` have no such field. That is a real gap rather than something to delete, so it is
+// stated here as an intersection rather than hidden behind a mirror. Closing it (the factory adds
+// the field, or these helpers stop writing it) is an owner decision.
 
-interface UnifiedIdBase {
-  organisationId: string;
-  uniqueOrganisationName?: string;
-  isOrigin?: boolean;
-  createdAt?: string;
-}
-
-export interface IngestTournamentID extends UnifiedIdBase {
-  tournamentId: string;
-}
-export interface IngestEventID extends UnifiedIdBase {
-  tournamentId?: string;
-  eventId?: string;
-}
-export interface IngestDrawID extends UnifiedIdBase {
-  tournamentId?: string;
-  eventId?: string;
-  drawId?: string;
-}
-export interface IngestParticipantID extends UnifiedIdBase {
-  participantId: string;
-}
-export interface IngestPersonID extends UnifiedIdBase {
-  personId: string;
-}
+/** @deprecated the factory's `UnifiedTournamentID`; import that instead. Kept so importers of 0.2.x compile. */
+export type IngestTournamentID = UnifiedTournamentID;
+/** @deprecated the factory's `UnifiedEventID`; import that instead. Kept so importers of 0.2.x compile. */
+export type IngestEventID = UnifiedEventID;
+/** @deprecated the factory's `UnifiedDrawID`; import that instead. Kept so importers of 0.2.x compile. */
+export type IngestDrawID = UnifiedDrawID;
+/** The factory's `UnifiedParticipantID` plus `isOrigin`, which it does not declare (see above). */
+export type IngestParticipantID = UnifiedParticipantID & { isOrigin?: boolean };
+/** The factory's `UnifiedPersonID` plus `isOrigin`, which it does not declare (see above). */
+export type IngestPersonID = UnifiedPersonID & { isOrigin?: boolean };
 
 const identity = (origin: OriginOrganisation) => ({
   organisationId: origin.organisationId,
@@ -88,7 +87,7 @@ const identity = (origin: OriginOrganisation) => ({
 });
 
 /** Where the whole RECORD came from. Always the origin — an ingested record has exactly one source. */
-export function originTournamentIds(origin: OriginOrganisation, tournamentId: string | number): IngestTournamentID[] {
+export function originTournamentIds(origin: OriginOrganisation, tournamentId: string | number): UnifiedTournamentID[] {
   return [{ ...identity(origin), tournamentId: String(tournamentId), isOrigin: true }];
 }
 
@@ -104,7 +103,7 @@ export function originTournamentIds(origin: OriginOrganisation, tournamentId: st
 export function originEventIds(
   origin: OriginOrganisation,
   ids: { tournamentId?: string | number; eventId?: string | number },
-): IngestEventID[] {
+): UnifiedEventID[] {
   return [{ ...identity(origin), ...optionalIds(ids), isOrigin: true }];
 }
 
@@ -116,7 +115,7 @@ export function originEventIds(
 export function originDrawIds(
   origin: OriginOrganisation,
   ids: { tournamentId?: string | number; eventId?: string | number; drawId?: string | number },
-): IngestDrawID[] {
+): UnifiedDrawID[] {
   return [{ ...identity(origin), ...optionalIds(ids), isOrigin: true }];
 }
 
