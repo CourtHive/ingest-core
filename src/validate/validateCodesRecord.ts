@@ -120,6 +120,49 @@ function drawReadabilityErrors(record: any): string[] {
   return errors;
 }
 
+/**
+ * READABLE IS NOT CONSISTENT. `getDrawData` proves the factory can read a draw; it does not prove the
+ * draw is internally coherent. A WINNER/LOSER link with no `source.roundNumber` reads back without
+ * complaint — and then progression has nowhere to send anyone. So after the read we ask the factory's
+ * integrity hierarchy (`getTournamentInconsistencies`, which fans out to every event and every draw,
+ * and adds the event- and tournament-level checks above them) what it finds wrong.
+ *
+ * The factory assigns each finding a severity, and that severity is honoured rather than re-judged
+ * here: an `error` fails validation, anything lower is reported as a warning and does not. That is
+ * the factory's own definition of `valid` (`hasErrorSeverity`), so the two cannot drift. Every message
+ * carries the issue type and the draw/structure it was found in, so a refusal names its target.
+ */
+function describeInconsistency(inconsistency: any): string {
+  const where = [
+    inconsistency?.drawId && `Draw ${inconsistency.drawId}`,
+    inconsistency?.structureId && `structure ${inconsistency.structureId}`,
+    inconsistency?.matchUpId && `matchUp ${inconsistency.matchUpId}`,
+  ].filter(Boolean);
+  const location = where.length ? where.join(' ') : `${inconsistency?.scope ?? 'TOURNAMENT'} scope`;
+  return `${location}: ${inconsistency?.issueType ?? 'UNKNOWN_INCONSISTENCY'} — ${inconsistency?.message ?? ''}`.trim();
+}
+
+function drawIntegrityErrors(record: any): { errors: string[]; warnings: string[] } {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  let result: any;
+  try {
+    result = queryGovernor.getTournamentInconsistencies({ tournamentRecord: record });
+  } catch (err) {
+    // A scan that cannot run has not shown the record is consistent. Fail closed.
+    return { errors: [`Integrity scan threw: ${(err as Error).message}`], warnings };
+  }
+  if (result?.error) {
+    const code = result.error.code ?? result.error.message ?? JSON.stringify(result.error);
+    return { errors: [`Integrity scan failed: ${code}`], warnings };
+  }
+  for (const inconsistency of result?.inconsistencies ?? []) {
+    if (inconsistency?.severity === 'error') errors.push(describeInconsistency(inconsistency));
+    else warnings.push(`${describeInconsistency(inconsistency)} (${inconsistency?.severity ?? 'unrated'})`);
+  }
+  return { errors, warnings };
+}
+
 export function validateCodesRecord(tournamentRecord: Tournament | any): CodesValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -148,6 +191,9 @@ export function validateCodesRecord(tournamentRecord: Tournament | any): CodesVa
   }
 
   errors.push(...drawReadabilityErrors(tournamentRecord));
+  const integrity = drawIntegrityErrors(tournamentRecord);
+  errors.push(...integrity.errors);
+  warnings.push(...integrity.warnings);
   errors.push(...entryReferenceErrors(tournamentRecord));
 
   // A warning, not an error: a record without a provider is still a valid CODES document, it simply

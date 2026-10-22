@@ -147,3 +147,80 @@ describe('validateCodesRecord — date format', () => {
     expect(result.errors.join(' ')).toContain('before or equal');
   });
 });
+
+describe('validateCodesRecord — draw integrity', () => {
+  /**
+   * A draw can be READABLE and still be inconsistent. A WINNER/LOSER link with no
+   * `source.roundNumber` reads back through `getDrawData` without complaint, so before this step it
+   * passed validation; progression simply had nowhere to send anyone.
+   */
+  function linkedRecord(drawType: string): any {
+    const { tournamentRecord } = mocksEngine.generateTournamentRecord({
+      drawProfiles: [{ drawSize: 16, drawType }],
+      nonRandom: 1,
+    });
+    return tournamentRecord;
+  }
+
+  it.each(['FEED_IN_CHAMPIONSHIP_TO_R16', 'FIRST_MATCH_LOSER_CONSOLATION', 'COMPASS'])(
+    'accepts an uncorrupted %s draw — the control for the corruption below',
+    (drawType) => {
+      const record = linkedRecord(drawType);
+      expect(record.events[0].drawDefinitions[0].links.length).toBeGreaterThan(0);
+      const result = validateCodesRecord(record);
+      expect(result.errors).toEqual([]);
+      expect(result.valid).toBe(true);
+    },
+  );
+
+  it.each(['FIRST_MATCH_LOSER_CONSOLATION', 'COMPASS'])(
+    'REFUSES a %s draw whose round link has lost its source.roundNumber',
+    (drawType) => {
+      const record = clone(linkedRecord(drawType));
+      const draw = record.events[0].drawDefinitions[0];
+      const link = draw.links.find((l: any) => ['WINNER', 'LOSER'].includes(l.linkType) && l.source?.roundNumber);
+      expect(link).toBeDefined();
+      delete link.source.roundNumber;
+
+      // Readability alone does not see this: the corruption must be caught by the integrity step.
+      const result = validateCodesRecord(record);
+      expect(result.valid).toBe(false);
+      const message = result.errors.find((e) => e.includes('LINK_MISSING_SOURCE_ROUND'));
+      expect(message).toBeDefined();
+      expect(message).toContain(`Draw ${draw.drawId}`);
+      expect(message).toContain(`structure ${link.source.structureId}`);
+    },
+  );
+
+  it('REFUSES a link that names a structure the draw does not carry', () => {
+    const record = clone(linkedRecord('FIRST_MATCH_LOSER_CONSOLATION'));
+    const draw = record.events[0].drawDefinitions[0];
+    draw.links[0].target.structureId = 'no-such-structure';
+    const result = validateCodesRecord(record);
+    expect(result.valid).toBe(false);
+    expect(result.errors.join(' ')).toContain('DANGLING_LINK');
+  });
+
+  it('reports a WARNING-severity finding without failing the record', () => {
+    const record = clone(validRecord());
+    const individual = record.participants.find((p: any) => p.participantType === 'INDIVIDUAL' && p.person?.personId);
+    expect(individual).toBeDefined();
+    // The same person under a second participantId: the factory rates this a warning, not corruption.
+    record.participants.push({ ...clone(individual), participantId: 'second-identity' });
+    const result = validateCodesRecord(record);
+    expect(result.errors).toEqual([]);
+    expect(result.valid).toBe(true);
+    expect(result.warnings.join(' ')).toContain('PARTICIPANT_IDENTITY_DUPLICATION');
+  });
+
+  it('writeCodesRecord refuses the corrupted link and writes no file', async () => {
+    const outDir = fs.mkdtempSync(path.join(tmpdir(), 'tods-integrity-'));
+    const record = clone(linkedRecord('FIRST_MATCH_LOSER_CONSOLATION'));
+    const link = record.events[0].drawDefinitions[0].links.find((l: any) => l.linkType === 'LOSER');
+    delete link.source.roundNumber;
+    const target = path.join(outDir, 'TEST', `${record.tournamentId}.json`);
+
+    await expect(writeCodesRecord(record, { outDir, provider: 'TEST' })).rejects.toThrow(CodesValidationError);
+    expect(fs.existsSync(target)).toBe(false);
+  });
+});
