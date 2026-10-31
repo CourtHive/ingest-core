@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.3.0](https://github.com/CourtHive/ingest-core/compare/v0.2.2...v0.3.0) (2026-10-31)
+
+
+### Features
+
+* **validate:** refuse records with error-severity draw inconsistencies ([#36](https://github.com/CourtHive/ingest-core/issues/36)) ([fb8762f](https://github.com/CourtHive/ingest-core/commit/fb8762fae1eb56cb3f76d7c4a209e0a158d91675))
+
+
+### Bug Fixes
+
+* **deps:** update tods-competition-factory to 7.19.0 ([3610653](https://github.com/CourtHive/ingest-core/commit/36106535087e163acd6b241ca06448fef1fa116d))
+* **deps:** update tods-competition-factory to 7.20.0 ([5c7daf0](https://github.com/CourtHive/ingest-core/commit/5c7daf030903a3d1a45c2c1252ccb75387e84b48))
+* **deps:** update tods-competition-factory to 7.21.0 ([7842cf0](https://github.com/CourtHive/ingest-core/commit/7842cf02cd1b1eeea7545e1c587ffd3e5b1bacbc))
+* **deps:** update tods-competition-factory to 7.22.0 ([0e56983](https://github.com/CourtHive/ingest-core/commit/0e5698372cb31fa0c649f43c39465105c57ca02c))
+* **deps:** update tods-competition-factory to 7.23.0 ([aadbd1a](https://github.com/CourtHive/ingest-core/commit/aadbd1a19a057f49f93fbe33f7fc88379c532f5f))
+* **deps:** update tods-competition-factory to 7.24.0 ([9f8ab41](https://github.com/CourtHive/ingest-core/commit/9f8ab4170a807bab1b4041aac4c689bbf1b1337a))
+* **deps:** update tods-competition-factory to 7.25.0 ([289974a](https://github.com/CourtHive/ingest-core/commit/289974a5729c1266f93aaf155b26863ad8c78397))
+* **deps:** update tods-competition-factory to 7.26.0 ([a615640](https://github.com/CourtHive/ingest-core/commit/a61564096c050ad4f8dc26910ddb7f4283125230))
+
 ## [0.2.2](https://github.com/CourtHive/ingest-core/compare/v0.2.1...v0.2.2) (2026-10-21)
 
 
