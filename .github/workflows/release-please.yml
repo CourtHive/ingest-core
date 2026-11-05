@@ -17,7 +17,8 @@ name: release-please
 # with a per-package npm Trusted Publisher over OIDC.
 #
 # Day-to-day flow:
-#   1. Land feat:/fix:/chore:/docs: PRs on main.
+#   1. Land feat:/fix:/chore:/docs: PRs on dev; checkpoint dev into main with a
+#      merge commit (this workflow runs on that push).
 #   2. The bot updates a `chore: release X.Y.Z` PR automatically.
 #   3. Merge the release PR -> GitHub release + tag are created and
 #      npm-publish.yml fires to push @courthive/ingest-core.
