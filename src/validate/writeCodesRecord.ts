@@ -2,6 +2,7 @@ import { tournamentGovernor } from 'tods-competition-factory';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 
+import { normalizeRecordStatusCodes } from '../normalize/statusCodes';
 import { ensureVenueIdentity } from '../normalize/venueIdentity';
 import { validateCodesRecord } from './validateCodesRecord';
 
@@ -35,7 +36,7 @@ export interface WriteCodesOptions {
   allowInvalid?: boolean;
   /**
    * Namespace for any venue/court id minted here. Defaults to the lowercased provider, which is what
-   * every adapter already uses as its `idPrefix` (`te`, `ts`, `utr`).
+   * every adapter already uses as its `idPrefix` (a short lowercase provider key).
    */
   idPrefix?: string;
   /** Receives warnings, and errors when `allowInvalid` is set. Defaults to `console.warn`. */
@@ -80,6 +81,13 @@ export async function writeCodesRecord(
       .join(', ');
     report(`i ${tournamentRecord.tournamentId}: migrated ${promoted}`);
   }
+
+  // EXIT REASON CODES IN THE CODES SHAPE, for the same reason: a source written by an earlier factory stores an exit's
+  // reason code unpadded (`['W1']` on a walkover side 1 won), which the integrity scan below reads as a code on the
+  // WINNER's side and refuses. Normalizing here makes it a property of the write path rather than something every
+  // adapter rediscovers. Idempotent; a record already in the shape is untouched and nothing is reported.
+  const statusCodes = normalizeRecordStatusCodes(tournamentRecord);
+  if (statusCodes) report(`i ${tournamentRecord.tournamentId}: normalized ${statusCodes} exit reason code(s) to the per-side shape`);
 
   const identity = ensureVenueIdentity(tournamentRecord, options.idPrefix ?? options.provider.toLowerCase());
   if (identity.venuesFixed || identity.courtsFixed) {

@@ -81,7 +81,7 @@ failure and is not one.
 
 ## Dependencies
 
-`tods-competition-factory` is a **peer** dependency, currently `^7.1.0`, and it is the only runtime
+`tods-competition-factory` is a **peer** dependency, currently `^7.30.0` (the version the integrity checks are tested against), and it is the only runtime
 dependency. Keep it that way: a toolkit that acquires dependencies becomes a toolkit people work
 around.
 

@@ -59,3 +59,21 @@ describe('writeCodesRecord — migration', () => {
     expect(diagnostics.filter((message) => /migrated/.test(message))).toEqual([]);
   });
 });
+
+describe('writeCodesRecord — exit reason codes', () => {
+  it('writes an unpadded exit code in the per-side shape instead of refusing the record, and says so', async () => {
+    const outDir = fs.mkdtempSync(path.join(tmpdir(), 'ingest-core-exitcodes-'));
+    const { tournamentRecord } = mocksEngine.generateTournamentRecord({ drawProfiles: [{ drawSize: 4 }], completeAllMatchUps: true });
+    const walkover = tournamentRecord.events[0].drawDefinitions[0].structures[0].matchUps.find((m: any) => m.roundNumber === 1);
+    expect(walkover.winningSide).toBe(1);
+    Object.assign(walkover, { matchUpStatus: 'WALKOVER', matchUpStatusCodes: ['W1'], score: undefined });
+    const diagnostics: string[] = [];
+
+    const result = await writeCodesRecord(tournamentRecord, { onDiagnostic: (message) => diagnostics.push(message), provider: 'TEST', outDir });
+
+    const matchUp = written(result.path, walkover.matchUpId);
+    expect(matchUp.matchUpStatusCodes).toEqual(['', 'W1']);
+    expect(matchUp.sideStatusCodes).toEqual({ 2: 'W1' });
+    expect(diagnostics.some((d) => /normalized 1 exit reason code/.test(d))).toBe(true);
+  });
+});
