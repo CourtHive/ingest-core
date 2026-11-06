@@ -11,6 +11,7 @@
 // ---- the adapter contract + registry ----
 export * from './contract/FederationDataAdapter';
 export * from './contract/AdapterRegistry';
+export * from './contract/ConveyorAdapter';
 
 // ---- TODS/CODES normalization ----
 export * from './normalize/builders';
@@ -18,6 +19,7 @@ export * from './normalize/unifiedIds';
 export * from './normalize/venueIdentity';
 export * from './normalize/numeric';
 export * from './normalize/tournamentLevel';
+export * from './normalize/statusCodes';
 
 // ---- integrity checking + record output ----
 export * from './validate/validateCodesRecord';
