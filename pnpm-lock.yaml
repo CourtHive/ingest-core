@@ -203,8 +203,8 @@ importers:
         specifier: ^6.0.0
         version: 6.1.3
       tods-competition-factory:
-        specifier: 7.30.0
-        version: 7.30.0
+        specifier: 7.36.0
+        version: 7.36.0
       typescript:
         specifier: 6.0.3
         version: 6.0.3
@@ -974,8 +974,8 @@ packages:
     resolution: {integrity: sha512-wXR/dYpcqKmfWpEdZjiKJOwCNFndD0DMnrW/cYjVGttEkBfVgcLFHoNrlj47mjOVic9yyNu65alsgF4NQyTa2g==}
     engines: {node: '>=12.0.0'}
 
-  tods-competition-factory@7.30.0:
-    resolution: {integrity: sha512-O/+LEbjJEdYjDdQ+yHUhSah0B0Hrzv6CTSeo/O1FpEMbugEYLRBiPlGGOvUAXcFFKsYJN9duXY/3PjFfMtIgqg==}
+  tods-competition-factory@7.36.0:
+    resolution: {integrity: sha512-Ie2j36uuB9SPfUm7LxrhBPnzg6WP2QgnHNv2Q2n+0OjJNX6ZFC8UtQp4uWz40UE0GeIqbVUsoBYVIoWvuFbpjA==}
     engines: {node: '>=24'}
 
   ts-api-utils@2.5.0:
@@ -1792,7 +1792,7 @@ snapshots:
       fdir: 6.5.0(picomatch@4.0.7)
       picomatch: 4.0.7
 
-  tods-competition-factory@7.30.0: {}
+  tods-competition-factory@7.36.0: {}
 
   ts-api-utils@2.5.0(typescript@6.0.3):
     dependencies:
