@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.3.1](https://github.com/CourtHive/ingest-core/compare/v0.3.0...v0.3.1) (2026-11-16)
+
+
+### Bug Fixes
+
+* **deps:** update tods-competition-factory to 7.32.0 ([64ee585](https://github.com/CourtHive/ingest-core/commit/64ee58549d2c4cfad510f776815590e0dc54faf3))
+* **deps:** update tods-competition-factory to 7.33.0 ([b6b7d49](https://github.com/CourtHive/ingest-core/commit/b6b7d493c6ed2fb61d15b052c153f9eb2670a60b))
+* **deps:** update tods-competition-factory to 7.36.0 ([#54](https://github.com/CourtHive/ingest-core/issues/54)) ([80e4347](https://github.com/CourtHive/ingest-core/commit/80e4347551c6d2bfcdb873783d9470bab1b0710a))
+* **deps:** update tods-competition-factory to 7.36.1 ([#55](https://github.com/CourtHive/ingest-core/issues/55)) ([5adb4d8](https://github.com/CourtHive/ingest-core/commit/5adb4d8b0b55933db59e9fcbb311fbbda7ca5d29))
+* **deps:** update tods-competition-factory to 7.37.0 ([#58](https://github.com/CourtHive/ingest-core/issues/58)) ([65a5560](https://github.com/CourtHive/ingest-core/commit/65a5560df588a2667918fb8776e6cc23fd5621f7))
+* **deps:** update tods-competition-factory to 7.38.0 ([#59](https://github.com/CourtHive/ingest-core/issues/59)) ([43c31ab](https://github.com/CourtHive/ingest-core/commit/43c31abaf3968167d2ee897072b8ef4ae5926e2d))
+* **deps:** update tods-competition-factory to 7.39.0 ([#62](https://github.com/CourtHive/ingest-core/issues/62)) ([68b1919](https://github.com/CourtHive/ingest-core/commit/68b1919811eaf385b0be88e047709f6d02e17bb6))
+
 ## [0.3.0](https://github.com/CourtHive/ingest-core/compare/v0.2.2...v0.3.0) (2026-11-06)
 
 
