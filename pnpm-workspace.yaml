@@ -26,3 +26,9 @@ minimumReleaseAgeExclude:
 # renovate raised a TS7 bump HERE and nowhere else in the ecosystem.
 overrides:
   typescript: 6.0.3 # block native TS7 (no classic JS API — crashes tsc/nest/sonarjs); pairs with renovate TS-major block
+
+# pnpm 12 reads its project settings from this file and IGNORES them in .npmrc ("Unknown project config
+# verify-deps-before-run"). Without this, every `pnpm <script>` — the husky hooks included — runs an install
+# first; in a scripts/worktree.sh worktree, whose node_modules are symlinks to the main checkout, that install
+# rewrites the MAIN checkout's workspace links to point into the worktree (2026-11-19/20, three times).
+verifyDepsBeforeRun: false
