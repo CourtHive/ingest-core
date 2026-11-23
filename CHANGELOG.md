@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.7](https://github.com/CourtHive/ingest-core/compare/v0.3.6...v0.3.7) (2026-11-23)
+
+
+### Bug Fixes
+
+* **deps:** update tods-competition-factory to 7.47.0 ([#91](https://github.com/CourtHive/ingest-core/issues/91)) ([08f7a80](https://github.com/CourtHive/ingest-core/commit/08f7a80aab1f69904a9f526d46451e2afe1311dc))
+* **deps:** update tods-competition-factory to 7.48.0 ([f73c4c4](https://github.com/CourtHive/ingest-core/commit/f73c4c43d8c5c7e358519a8ddfb76212bb19c64b))
+* **deps:** update tods-competition-factory to 7.48.0 ([886de81](https://github.com/CourtHive/ingest-core/commit/886de81b0fdbf5ff188445d55f6a8d6c24815fb7))
+
 ## [0.3.6](https://github.com/CourtHive/ingest-core/compare/v0.3.5...v0.3.6) (2026-11-23)
 
 
