@@ -2,14 +2,6 @@
 
 Guidance for Claude Code (claude.ai/code) working in this repository.
 
-## Mentat Orchestration (READ FIRST)
-
-Before doing anything else, read `../Mentat/CLAUDE.md`, `../Mentat/TASKS.md`,
-`../Mentat/standards/coding-standards.md`, and every file in `../Mentat/in-flight/`. Mentat is the
-orchestration layer for the CourtHive ecosystem and **its standards override per-repo conventions
-when they conflict**. If you are about to start *building* rather than planning, claim a surface in
-`../Mentat/in-flight/` and run the air-traffic-control conflict check first.
-
 ## Branching — cut from `dev`, not `main` (CA, 2026-11-05)
 
 `dev` is this repo's integration branch, as in factory, TMX, components, CFS and the dev-flow services. **Branch from
