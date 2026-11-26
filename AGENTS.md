@@ -7,5 +7,5 @@ whole ecosystem; this file exists so agents that look for `AGENTS.md` by convent
 rather than finding nothing. Two documents saying the same thing drift, and then the question is
 which one is lying — so there is deliberately only one.
 
-Read `CLAUDE.md` first. It points, in turn, at `../Mentat/` — the ecosystem's orchestration layer,
-whose standards override anything repo-local.
+Read `CLAUDE.md` first. If an untracked `CLAUDE.local.md` sits beside it, read and follow that too:
+it holds machine-local workspace instructions and is never committed.
