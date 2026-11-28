@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.3.8](https://github.com/CourtHive/ingest-core/compare/v0.3.7...v0.3.8) (2026-11-28)
+
+
+### Bug Fixes
+
+* **deps:** update tods-competition-factory to 7.49.0 ([#96](https://github.com/CourtHive/ingest-core/issues/96)) ([430dabc](https://github.com/CourtHive/ingest-core/commit/430dabc7eb497583622dc3c9de8ac7ca8da44e6e))
+* **deps:** update tods-competition-factory to 7.50.0 ([#98](https://github.com/CourtHive/ingest-core/issues/98)) ([2cfa4b2](https://github.com/CourtHive/ingest-core/commit/2cfa4b2f287b6a2d3b444bd8692a1c7c49e7390f))
+* **deps:** update tods-competition-factory to 7.51.0 ([#99](https://github.com/CourtHive/ingest-core/issues/99)) ([cb307fd](https://github.com/CourtHive/ingest-core/commit/cb307fd532847ea0884b02d17ac1630f9b8f657b))
+
+
+### Documentation
+
+* keep the agent guide self-contained and ignore CLAUDE.local.md ([#97](https://github.com/CourtHive/ingest-core/issues/97)) ([50ef3f0](https://github.com/CourtHive/ingest-core/commit/50ef3f060420ef6e970507a4f5acd9d2926b4f75))
+
 ## [0.3.7](https://github.com/CourtHive/ingest-core/compare/v0.3.6...v0.3.7) (2026-11-23)
 
 
